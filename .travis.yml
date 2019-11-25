@@ -45,7 +45,7 @@ jobs:
             --local context=. \
             --output type=image,name=docker.io/$DOCKER_ORG/openresty:alpine-amd64 \
             --opt platform=linux/amd64 \
-            --opt filename=alpine/Dockerfile
+            --opt filename=./alpine/Dockerfile
       - docker image ls
 
       - if [[ "$TRAVIS_BRANCH" == "master" ]] ; then
@@ -71,7 +71,7 @@ jobs:
             --local context=. \
             --output type=image,name=docker.io/$DOCKER_ORG/openresty:alpine-armhf \
             --opt platform=linux/armhf \
-            --opt filename=alpine/Dockerfile.fat
+            --opt filename=./alpine/Dockerfile.fat
       - docker image ls
 
       - if [[ "$TRAVIS_BRANCH" == "master" ]] ; then
