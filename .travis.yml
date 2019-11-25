@@ -39,7 +39,15 @@ jobs:
     - stage: build docker image for flavors alpine and alpine-fat
       script:
       - echo "$DOCKER_PASSWORD" | docker login -u="$DOCKER_USERNAME" --password-stdin
-      - docker build -t openresty:alpine -f alpine/Dockerfile .
+      - export DOCKER_CLI_EXPERIMENTAL=enabled
+      - buildctl build --frontend dockerfile.v0 \
+            --local dockerfile=. \
+            --local context=. \
+            --output type=image,name=docker.io/$DOCKER_ORG/openresty:alpine-amd64 \
+            --opt platform=linux/amd64 \
+            --opt filename=alpine/Dockerfile
+      - docker image ls
+
       - if [[ "$TRAVIS_BRANCH" == "master" ]] ; then
           echo "$DOCKER_PASSWORD" | docker login -u="$DOCKER_USERNAME" --password-stdin &&
           docker tag openresty:alpine $DOCKER_ORG/openresty:alpine &&
@@ -57,7 +65,15 @@ jobs:
           docker push $DOCKER_ORG/openresty:$TRAVIS_TAG-alpine ;
         fi
       - echo "$DOCKER_PASSWORD" | docker login -u="$DOCKER_USERNAME" --password-stdin
-      - docker build -t openresty:alpine-fat -f alpine/Dockerfile.fat .
+      
+      - buildctl build --frontend dockerfile.v0 \
+            --local dockerfile=. \
+            --local context=. \
+            --output type=image,name=docker.io/$DOCKER_ORG/openresty:alpine-armhf \
+            --opt platform=linux/armhf \
+            --opt filename=alpine/Dockerfile.fat
+      - docker image ls
+
       - if [[ "$TRAVIS_BRANCH" == "master" ]] ; then
           echo "$DOCKER_PASSWORD" | docker login -u="$DOCKER_USERNAME" --password-stdin &&
           docker tag openresty:alpine-fat $DOCKER_ORG/openresty:alpine-fat &&
